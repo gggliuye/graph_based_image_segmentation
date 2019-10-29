@@ -23,6 +23,12 @@ International Journal of Computer Vision, 59(2) September 2004.
  
 ![image original](https://github.com/gggliuye/graph_based_image_segmentation/blob/master/images/indoor1.jpg)
 
+result using RGB distance
+![image original](https://github.com/gggliuye/graph_based_image_segmentation/blob/master/images/indoor_res1.jpg)
+
+result using HSV space
+![image original](https://github.com/gggliuye/graph_based_image_segmentation/blob/master/images/indoor_res3.jpg)
+
 ```latex
 @inproceedings{graph_based_image_segmentation,
   author={Felzenszwalb P F, Huttenlocher D P. },
