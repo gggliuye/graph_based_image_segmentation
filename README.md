@@ -21,7 +21,7 @@ International Journal of Computer Vision, 59(2) September 2004.
 
  ./bin/run_seg /path/to/image.jpg
  
-![image original](https://github.com/gggliuye/graph_based_image_segmentation/images/indoor1.jpg)
+![image original](https://github.com/gggliuye/graph_based_image_segmentation/blob/master/images/indoor1.jpg)
 
 ```latex
 @inproceedings{graph_based_image_segmentation,
