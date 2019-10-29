@@ -11,8 +11,16 @@ implement of Efficient graph-based image segmentation [1]_.
  make
 
 ## Example
+
  ./bin/run_seg /path/to/image.jpg
+ 
+![image original](images/indoor.jpg)
 
-.. image:: images/indoor.jpg
-
-.. [1] Felzenszwalb P F, Huttenlocher D P. Efficient graph-based image segmentation[J]. International journal of computer vision, 2004, 59(2): 167-181.
+```latex
+@inproceedings{graph_based_image_segmentation,
+  author={Felzenszwalb P F, Huttenlocher D P. },
+  booktitle={International journal of computer vision},
+  title={Efficient graph-based image segmentation},
+  year={2004}
+}
+```
