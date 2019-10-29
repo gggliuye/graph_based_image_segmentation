@@ -1,14 +1,21 @@
 # graph_based_image_segmentation
 graph_based_image_segmentation
 
+Implementation of the segmentation algorithm described in:
 
-implement of Efficient graph-based image segmentation [1]_.
+Efficient Graph-Based Image Segmentation
+Pedro F. Felzenszwalb and Daniel P. Huttenlocher
+International Journal of Computer Vision, 59(2) September 2004.
 
 ## Build in linux
- mkidr build
- cd build
- cmake ..
- make
+
+1) mkidr build
+
+2) cd build
+
+3) cmake ..
+
+4) make
 
 ## Example
 
