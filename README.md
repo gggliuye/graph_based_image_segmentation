@@ -14,7 +14,7 @@ implement of Efficient graph-based image segmentation [1]_.
 
  ./bin/run_seg /path/to/image.jpg
  
-![image original](images/indoor.jpg)
+![image original](https://github.com/gggliuye/graph_based_image_segmentation/images/indoor1.jpg)
 
 ```latex
 @inproceedings{graph_based_image_segmentation,
