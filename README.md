@@ -7,6 +7,10 @@ Efficient Graph-Based Image Segmentation
 Pedro F. Felzenszwalb and Daniel P. Huttenlocher
 International Journal of Computer Vision, 59(2) September 2004.
 
+## dependence
+
+need Opencv
+
 ## Build in linux
 
 1) mkidr build
