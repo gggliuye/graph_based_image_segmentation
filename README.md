@@ -7,6 +7,8 @@ Efficient Graph-Based Image Segmentation
 Pedro F. Felzenszwalb and Daniel P. Huttenlocher
 International Journal of Computer Vision, 59(2) September 2004.
 
+And graph cut image background/foreground segmentation. Using maxflow by "http://pub.ist.ac.at/~vnk/software.html".
+
 ## dependence
 
 need Opencv
