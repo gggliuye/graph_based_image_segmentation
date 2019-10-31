@@ -16,6 +16,7 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/include
   ${PROJECT_SOURCE_DIR}
   ${PROJECT_SOURCE_DIR}/ThirdParty/maxflow
+  ${PROJECT_SOURCE_DIR}/ThirdParty/kdtree
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
@@ -25,6 +26,7 @@ add_library(${PROJECT_NAME} SHARED
 src/graphBasedSegmentation.cc
 ThirdParty/maxflow/graph.cpp
 ThirdParty/maxflow/maxflow.cpp
+ThirdParty/kdtree/kdtree.c
 )
 
 target_link_libraries(${PROJECT_NAME}
