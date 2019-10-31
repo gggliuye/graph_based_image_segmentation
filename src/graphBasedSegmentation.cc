@@ -56,31 +56,14 @@ GraphBasedSegmentation::GraphBasedSegmentation(cv::Mat &image,
     postProcessComponents();
 
     drawOutput();
+
 }
 
 GraphBasedSegmentation::~GraphBasedSegmentation() {
     delete [] edges;
     delete componentTree;
 }
-#if 0
-void GraphBasedSegmentation::assignEdgeWeight(edge *edge_i)
-{
-    float weight;
-    if(isGray){
-        weight = square(imageOrigin.at<uchar>(edge_i->pixel_i.i, edge_i->pixel_i.j)
-                             -imageOrigin.at<uchar>(edge_i->pixel_j.i, edge_i->pixel_j.j));
-    } else{
-        weight = square(imageR.at<uchar>(edge_i->pixel_i.i, edge_i->pixel_i.j)
-                             -imageR.at<uchar>(edge_i->pixel_j.i, edge_i->pixel_j.j));
-        weight += square(imageG.at<uchar>(edge_i->pixel_i.i, edge_i->pixel_i.j)
-                        -imageG.at<uchar>(edge_i->pixel_j.i, edge_i->pixel_j.j));
-        weight += square(imageB.at<uchar>(edge_i->pixel_i.i, edge_i->pixel_i.j)
-                        -imageB.at<uchar>(edge_i->pixel_j.i, edge_i->pixel_j.j));
 
-    }
-    edge_i->weight = sqrt(weight);
-}
-#endif
 void GraphBasedSegmentation::assignEdgeWeight(edge *edge_i)
 {
     float weight;
@@ -182,6 +165,113 @@ void GraphBasedSegmentation::buildSegmentationGraph()
     fprintf(stderr, " Build graph -> Edge size : %d, Count : %d \n", initsize, count);
 }
 
+#include "kdtree.h"
+/*
+static double dist_sq( double *a1, double *a2, int dims ) {
+  double dist_sq = 0, diff;
+  while( --dims >= 0 ) {
+    diff = (a1[dims] - a2[dims]);
+    dist_sq += diff*diff;
+  }
+  return dist_sq;
+}
+
+static double rd( void ) {
+  return (double)rand()/RAND_MAX * 20.0 - 10.0;
+}
+*/
+
+void GraphBasedSegmentation::buildSegmentationGraphKNN()
+{
+    int pixelsize = cols * rows;
+    std::vector<edge> edgesVec;
+
+    char* data;
+    data = new char[pixelsize*10];
+
+    // create a k-d tree for 5-dimensional points (u,v,r,g,b / u,v,h,s,v)
+    kdtree *ptree;
+    ptree = kd_create(5);
+
+    for(int i = 0; i < rows; i++){
+        for(int j = 0; j < cols; j++){
+            int index = cols*i + j;
+            data[index*10] = 'a' + index;
+            double buf[5];
+            buf[0] = i;
+            buf[1] = j;
+            if(!useHSV){
+                buf[2] = imageR.at<float>(i,j);
+                buf[3] = imageG.at<float>(i,j);
+                buf[4] = imageB.at<float>(i,j);
+	    } else {
+                buf[2] = imageR.at<float>(i,j)*2;
+                buf[3] = imageG.at<float>(i,j)*0.3;  // 0.3
+                buf[4] = imageB.at<float>(i,j)*0.3;  // 0.3
+            }
+            kd_insert(ptree, buf, &data[index]);
+        }
+    }
+
+    int count = 0;
+    double radius = 10;
+    struct kdres *presults;
+    for(int i = 0; i < rows; i++){
+        for(int j = 0; j < cols; j++){
+            int index = cols*i + j;
+            data[index*10] = 'a' + index;
+            double buf[5];
+            buf[0] = i;
+            buf[1] = j;
+            if(!useHSV){
+                buf[2] = imageR.at<float>(i,j);
+                buf[3] = imageG.at<float>(i,j);
+                buf[4] = imageB.at<float>(i,j);
+	    } else {
+                buf[2] = imageR.at<float>(i,j)*2;
+                buf[3] = imageG.at<float>(i,j)*0.3;
+                buf[4] = imageB.at<float>(i,j)*0.3;
+            }
+            /* find points closest to the origin and within distance radius */
+            presults = kd_nearest_range( ptree, buf, radius );
+
+            /* print out all the points found in results */
+            //printf( "found %d results:\n", kd_res_size(presults) );
+
+            double pos[5];
+            while( !kd_res_end( presults ) ) {
+                kd_res_item( presults, pos );
+
+                edge edge_new;
+                edge_new.pixel_i.i = i;
+                edge_new.pixel_i.j = j;
+                edge_new.pixel_j.i = pos[0];
+                edge_new.pixel_j.j = pos[1];
+                assignEdgeWeight(&edge_new);
+                edgesVec.push_back(edge_new);
+                count++;
+
+                kd_res_next( presults );
+            }
+        }
+    }
+    
+    fprintf(stderr, " Build graph -> Edge size : %d \n", count);
+
+    edge_count = count;
+    edges = new edge[count];
+
+    for(int i = 0; i < count ; i ++){
+        edges[i] = edgesVec[i];
+    }
+    edgesVec.clear();
+
+    /* free our tree, results set, and other allocated memory */
+    free( data );
+    kd_res_free( presults );
+    kd_free( ptree );
+}
+
 
 void GraphBasedSegmentation::segmentGraph()
 {
@@ -228,7 +318,7 @@ void GraphBasedSegmentation::postProcessComponents()
 
 void GraphBasedSegmentation::drawOutput()
 {
-    cv::Mat imageOutput = cv::Mat(rows,cols, CV_8UC3);
+    imageOutput = cv::Mat(rows,cols, CV_8UC3);
 
     // initial with random color
     for (int i = 0; i < rows; i++) {
@@ -249,7 +339,13 @@ void GraphBasedSegmentation::drawOutput()
             imageOutput.at<cv::Vec3b>(i,j)[2] = imageOutput.at<cv::Vec3b>(x,y)[2];
         }
     } 
-    cv::imwrite("/home/viki/Documents/ImageSegmentation/indoor_res3.jpg", imageOutput);
-    cv::imshow("test",imageOutput);
-    cv::waitKey(0);
+    //cv::imwrite("/home/viki/Documents/ImageSegmentation/indoor_res_kdtree.jpg", imageOutput);
+    //cv::imshow("test",imageOutput);
+    //cv::waitKey(0);
+}
+
+
+void GraphBasedSegmentation::saveOutput(char* path)
+{
+    cv::imwrite(path, imageOutput);
 }
