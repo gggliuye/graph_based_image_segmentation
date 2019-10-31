@@ -14,9 +14,11 @@ public:
     GraphBasedSegmentation(cv::Mat &image, float sigma_, float c_, int min_size_);
     ~GraphBasedSegmentation();
 
+public:
     void buildSegmentationGraph();
 
-private:
+    void buildSegmentationGraphKNN();
+
     void assignEdgeWeight(edge *edge_i);
 
     void segmentGraph();
@@ -25,10 +27,13 @@ private:
 
     void drawOutput();
 
+    void saveOutput(char *path);
+
 private:
     bool isGray;
     bool useHSV = true;
     cv::Mat imageOrigin;
+    cv::Mat imageOutput;
 
     // used when it is a color image, empty if input a gray image
     cv::Mat imageB, imageG, imageR;
