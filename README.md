@@ -45,6 +45,10 @@ Graph cut result
 
 ![image original](https://github.com/gggliuye/graph_based_image_segmentation/blob/master/images/graphcutresult.jpg)
 
+Matlab based L1 image filling
+
+![image original](Matlab_l1/depth_result.jpg)
+
 
 ```latex
 @inproceedings{graph_based_image_segmentation,
